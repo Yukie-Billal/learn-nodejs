@@ -1,0 +1,20 @@
+{
+  "name": "contact-app",
+  "version": "1.0.0",
+  "description": "Studi kasus contact app sederhana",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yukie Muhammad Billal",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "validator": "^13.9.0",
+    "yargs": "^16.2.0"
+  }
+}

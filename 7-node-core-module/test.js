@@ -1,0 +1,1 @@
+const nama = "Yukie Muhammad Billal";
