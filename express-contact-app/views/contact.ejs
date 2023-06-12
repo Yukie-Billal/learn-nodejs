@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col-md-8">
             <h2>Daftar Kontak</h2>
+            <a href="/contact/add" class="btn btn-primary btn-sm mb-3 mt-2">Add Contact</a>
             <table class="table">
                 <thead>
                     <tr>
@@ -12,16 +13,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% contacts.forEach(element => { %>
+                    <% if (contacts.length == 0) { -%>
+                        <tr>
+                            <td colspan="4">
+                                <div class="alert alert-danger fw-bold text-center" role="alert">
+                                    Contact Kosong 
+                                </div>
+                            </td>
+                        </tr>
+                    <% } -%>
+                    <% contacts.forEach((contact, i) => { %>
                     <tr>
-                        <td scope="row">1</td>
-                        <td>Yukie Muhammad Billal</td>
-                        <td>yukie@gmail.com</td>
+                        <td scope="row"><%= ++i %></td>
+                        <td><%= contact.nama %></td>
+                        <td><%= contact.email %></td>
                         <td>
-                            <div class="badge rounded-pill bg-success">
+                            <!-- <div class="badge rounded-pill bg-success" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#detailModal"> -->
+                            <a href="/contact/<%= contact.nama %>" class="badge rounded-pill bg-success" style="cursor: pointer;">
                                 <i class="bi bi-info-circle"></i>
                                 Detail
-                            </div>
+                            </a>
                         </td>
                     </tr>
                     <% }) %>
@@ -29,4 +40,5 @@
             </table>
         </div>
     </div>
+    <%- include('component/modal') %>
 </div>

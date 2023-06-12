@@ -1,4 +1,5 @@
 const fs = require('fs')
+const validator = require('validator')
 
 const dirPath = './data'
 if (!fs.existsSync(dirPath)) {
@@ -11,8 +12,31 @@ if (!fs.existsSync(filePath)) {
 }
 
 const getContacts = () => {
-   let contacts = fs.readFileSync("data/contacts.json", "utf-8")
+   const contacts = fs.readFileSync("data/contacts.json", "utf-8")
    return JSON.parse(contacts);
 }
 
-module.exports = { getContacts }
+const findContact = (nama) => {
+   let contacts = getContacts()
+   return contacts.find((contact)=> contact.nama == nama)
+}
+
+const addContact = ({nama, email, nohp = null}) => {
+   const contacts = getContacts()
+   const duplikat = contacts.find((contact) => contact.nama.toLowerCase() == nama.toLowerCase())
+   if (duplikat) {
+      return false
+   }
+   if (!validator.isEmail(email)) {
+      return false
+   }
+   if (nohp) {
+      if (!validator.isMobilePhone(nohp)) {
+         return false
+      }
+   }
+   contacts.push({nama,email,nohp})
+   fs.writeFile('data/contacts.json', JSON.stringify(contacts), () => {})
+   return true
+}
+module.exports = { getContacts, findContact, addContact }

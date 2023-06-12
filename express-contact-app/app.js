@@ -9,15 +9,18 @@ app.set('view engine', 'ejs')
 app.use(expressLayouts)
 app.use(morgan('dev'))
 app.use(express.static('public'))
+app.use(express.urlencoded())
 
-
-const { getContacts } = require('./utils/contacts.js')
+const { getContacts, findContact, addContact } = require('./utils/contacts.js')
 
 app.get('/', (req, res) => {
+   var mahasiswa = 'Yukie Billal';
    res.render('index', {
       title: 'Home',
-      layout: 'partials/app-layout'
+      layout: 'partials/app-layout',
+      mahasiswa : mahasiswa
    })
+
 })
 app.get('/about', (req, res) => {
    res.render('about', {
@@ -30,6 +33,28 @@ app.get('/contact', (req, res) => {
       title: 'Contact',
       layout: 'partials/app-layout',
       contacts: getContacts()
+   })
+})
+
+app.get('/contact/add', (req, res) => {
+   res.render('contact-add', {
+      title : 'Add Contact',
+      layout : 'partials/app-layout'
+   })
+})
+
+app.post('/contact', (req, res) => {
+   const add = addContact(req.body)
+   res.send("Success")
+})
+
+app.get('/contact/:nama', (req, res) => {
+   const nama = req.params.nama
+   const contact = findContact(nama)
+   res.render('contact-detail', {
+      title: 'Detail Contact',
+      layout: 'partials/app-layout',
+      contact
    })
 })
 app.use('/', (req, res) => {

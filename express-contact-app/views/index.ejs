@@ -1,12 +1,3 @@
 <h1>Hai, Ini Adalah Halaman Home</h1>
 <h3>Daftar Mahasiswa</h3>
-<% if (mahasiswa.length <= 0) { %>
-<h5>Mahasiswa Kosong</h5>
-<% } else { %>
-<% mahasiswa.forEach(mhs => { %>
-<ul>
-    <li><%= mhs.nama %></li>
-    <li><%= mhs.email %></li>
-</ul>
-<% }) %>
-<% } %>
+<%- mahasiswa %>
