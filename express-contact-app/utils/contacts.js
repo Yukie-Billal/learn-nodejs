@@ -1,5 +1,4 @@
 const fs = require('fs')
-const validator = require('validator')
 
 const dirPath = './data'
 if (!fs.existsSync(dirPath)) {
@@ -21,22 +20,26 @@ const findContact = (nama) => {
    return contacts.find((contact)=> contact.nama == nama)
 }
 
-const addContact = ({nama, email, nohp = null}) => {
+const checkDuplikat = (nama) => {
    const contacts = getContacts()
    const duplikat = contacts.find((contact) => contact.nama.toLowerCase() == nama.toLowerCase())
    if (duplikat) {
-      return false
-   }
-   if (!validator.isEmail(email)) {
-      return false
-   }
-   if (nohp) {
-      if (!validator.isMobilePhone(nohp)) {
-         return false
+      return {
+         message : "Nama sudah terpakai",
+         status : 400
       }
    }
+}
+
+const addContact = ({nama, email, nohp = null}) => {
+   const contacts = getContacts()
    contacts.push({nama,email,nohp})
-   fs.writeFile('data/contacts.json', JSON.stringify(contacts), () => {})
+   saveContacts(contacts)
    return true
 }
-module.exports = { getContacts, findContact, addContact }
+
+const saveContacts = (contacts) => {
+   fs.writeFile('data/contacts.json', JSON.stringify(contacts), () => {})
+}
+
+module.exports = { getContacts, findContact, addContact, checkDuplikat }

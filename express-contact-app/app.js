@@ -1,6 +1,11 @@
 const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
 const morgan = require('morgan')
+const { body, check, validationResult } = require('express-validator')
+const { getContacts, findContact, addContact, checkDuplikat } = require('./utils/contacts.js')
+const session = require('express-session')
+const cookieParser = require('cookie-parser')
+const flash = require('connect-flash')
 
 const app = express();
 const port = 3000;
@@ -9,9 +14,18 @@ app.set('view engine', 'ejs')
 app.use(expressLayouts)
 app.use(morgan('dev'))
 app.use(express.static('public'))
-app.use(express.urlencoded())
+app.use(express.urlencoded({extended : true}))
 
-const { getContacts, findContact, addContact } = require('./utils/contacts.js')
+// konfig flash
+app.use(cookieParser('secret'))
+app.use(session({
+   cookie : { maxAge :6000},
+   secret : 'secret',
+   resave : true,
+   saveUninitialized : true
+}))
+app.use(flash())
+
 
 app.get('/', (req, res) => {
    var mahasiswa = 'Yukie Billal';
@@ -29,10 +43,13 @@ app.get('/about', (req, res) => {
    })
 })
 app.get('/contact', (req, res) => {
+   const contacts = getContacts()
    res.render('contact', {
       title: 'Contact',
       layout: 'partials/app-layout',
-      contacts: getContacts()
+      contacts,
+      msg : req.flash("msg")
+
    })
 })
 
@@ -43,9 +60,29 @@ app.get('/contact/add', (req, res) => {
    })
 })
 
-app.post('/contact', (req, res) => {
-   const add = addContact(req.body)
-   res.send("Success")
+app.post( '/contact', [
+   body('nama').custom((value) => {
+      const duplikat = checkDuplikat(value)
+      if (duplikat) {
+         throw new Error("Nama contact sudah digunakan")
+      }
+      return true
+   }),
+   check('email', 'Email Tidak Valid!').isEmail(),
+   check('nohp', 'No hp Tidak Valid').isMobilePhone('id-ID')
+], (req, res) => {
+   const errors = validationResult(req)
+   if (!errors.isEmpty()) {
+      res.render('contact-add', {
+         title : 'Add Contact',
+         layout : 'partials/app-layout',
+         errors : errors.array()
+      })
+   } else {
+      const add = addContact(req.body)
+      req.flash("msg","Data Contact Berhasil Ditambahkan!")
+      res.redirect('/contact')
+   }
 })
 
 app.get('/contact/:nama', (req, res) => {
