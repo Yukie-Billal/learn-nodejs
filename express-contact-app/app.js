@@ -2,7 +2,7 @@ const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
 const morgan = require('morgan')
 const { body, check, validationResult } = require('express-validator')
-const { getContacts, findContact, addContact, checkDuplikat } = require('./utils/contacts.js')
+const { getContacts, findContact, addContact, checkDuplikat, deleteContact } = require('./utils/contacts.js')
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const flash = require('connect-flash')
@@ -14,15 +14,15 @@ app.set('view engine', 'ejs')
 app.use(expressLayouts)
 app.use(morgan('dev'))
 app.use(express.static('public'))
-app.use(express.urlencoded({extended : true}))
+app.use(express.urlencoded({ extended: true }))
 
 // konfig flash
 app.use(cookieParser('secret'))
 app.use(session({
-   cookie : { maxAge :6000},
-   secret : 'secret',
-   resave : true,
-   saveUninitialized : true
+   cookie: { maxAge: 6000 },
+   secret: 'secret',
+   resave: true,
+   saveUninitialized: true
 }))
 app.use(flash())
 
@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
    res.render('index', {
       title: 'Home',
       layout: 'partials/app-layout',
-      mahasiswa : mahasiswa
+      mahasiswa: mahasiswa
    })
 
 })
@@ -48,19 +48,19 @@ app.get('/contact', (req, res) => {
       title: 'Contact',
       layout: 'partials/app-layout',
       contacts,
-      msg : req.flash("msg")
+      msg: req.flash("msg")
 
    })
 })
 
 app.get('/contact/add', (req, res) => {
    res.render('contact-add', {
-      title : 'Add Contact',
-      layout : 'partials/app-layout'
+      title: 'Add Contact',
+      layout: 'partials/app-layout'
    })
 })
 
-app.post( '/contact', [
+app.post('/contact', [
    body('nama').custom((value) => {
       const duplikat = checkDuplikat(value)
       if (duplikat) {
@@ -74,14 +74,31 @@ app.post( '/contact', [
    const errors = validationResult(req)
    if (!errors.isEmpty()) {
       res.render('contact-add', {
-         title : 'Add Contact',
-         layout : 'partials/app-layout',
-         errors : errors.array()
+         title: 'Add Contact',
+         layout: 'partials/app-layout',
+         errors: errors.array()
       })
    } else {
       const add = addContact(req.body)
-      req.flash("msg","Data Contact Berhasil Ditambahkan!")
+      req.flash("msg", "Data Contact Berhasil Ditambahkan!")
       res.redirect('/contact')
+   }
+})
+
+app.get("/contact/delete/:nama", (req, res) => {
+   const contact = findContact(req.params.nama)
+   if (!contact) {
+      res.status(404)
+      res.send("404")
+   } else {
+      const deleted = deleteContact(req.params.nama)
+      if (deleted) {
+         req.flash("msg", "Data Contact Berhasil Dihapus!")
+         res.redirect('/contact')
+      } else {
+         req.flash("msg", "Data Contact Gagal Dihapus!")
+         res.redirect(`/contact:${req.params.nama}`)
+      }
    }
 })
 
@@ -91,7 +108,8 @@ app.get('/contact/:nama', (req, res) => {
    res.render('contact-detail', {
       title: 'Detail Contact',
       layout: 'partials/app-layout',
-      contact
+      contact,
+      'msg': req.flash("msg")
    })
 })
 app.use('/', (req, res) => {

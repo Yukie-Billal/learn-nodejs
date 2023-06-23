@@ -17,7 +17,7 @@ const getContacts = () => {
 
 const findContact = (nama) => {
    let contacts = getContacts()
-   return contacts.find((contact)=> contact.nama == nama)
+   return contacts.find((contact) => contact.nama == nama)
 }
 
 const checkDuplikat = (nama) => {
@@ -25,21 +25,31 @@ const checkDuplikat = (nama) => {
    const duplikat = contacts.find((contact) => contact.nama.toLowerCase() == nama.toLowerCase())
    if (duplikat) {
       return {
-         message : "Nama sudah terpakai",
-         status : 400
+         message: "Nama sudah terpakai",
+         status: 400
       }
    }
 }
 
-const addContact = ({nama, email, nohp = null}) => {
+const addContact = ({ nama, email, nohp = null }) => {
    const contacts = getContacts()
-   contacts.push({nama,email,nohp})
+   contacts.push({ nama, email, nohp })
    saveContacts(contacts)
    return true
 }
 
 const saveContacts = (contacts) => {
-   fs.writeFile('data/contacts.json', JSON.stringify(contacts), () => {})
+   fs.writeFile('data/contacts.json', JSON.stringify(contacts), () => { })
 }
 
-module.exports = { getContacts, findContact, addContact, checkDuplikat }
+const deleteContact = (nama) => {
+   const contacts = getContacts()
+   const newContacts = contacts.filter((contact) => contact.nama !== nama)
+   if (contacts === newContacts) {
+      return false
+   }
+   saveContacts(newContacts)
+   return true
+}
+
+module.exports = { getContacts, findContact, addContact, checkDuplikat, deleteContact }

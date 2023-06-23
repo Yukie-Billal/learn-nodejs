@@ -1,21 +1,30 @@
 <div class="container mt-3">
-	<div class="row">
-		<% if (!contact) { -%>
-			<div class="alert alert-danger fw-bold" role="alert">
-				Nama Contact Tidak Ditemukan <a href="/contact" class="alert-link d-block fw-normal">&laquo; Kembali</a>
-			</div>
-		<% } else { -%>
-			<div class="col-md-4">
-				<h2>Detail Contact</h2>
-				<div class="card">
-					<div class="card-body border-0">
-						<div class="card-title"><%= contact.nama %></div>
-						<div class="card-subtitle text-muted"><%= contact.noHP %></div>
-						<div class="card-text mb-2"><%= contact.email %></div>
-						<a href="/contact" class="card-link" >&laquo; Kembali Ke Halaman Contact</a>
-					</div>
-				</div>
-			</div>
-		<% } -%>
-	</div>
+    <div class="row">
+        <% if (!contact) { -%>
+        <div class="alert alert-danger fw-bold" role="alert">
+            Nama Contact Tidak Ditemukan <a href="/contact" class="alert-link d-block fw-normal">&laquo; Kembali</a>
+        </div>
+        <% } else { -%>
+        <% if (msg.length !== 0) { %>
+            <div class="alert alert-success" role="alert">
+                <%= msg %>
+            </div>
+        <% } %>
+        <div class="col-md-4">
+            <h2>Detail Contact</h2>
+            <div class="card">
+                <div class="card-body border-0">
+                    <div class="card-title"><%= contact.nama %></div>
+                    <div class="card-subtitle text-muted"><%= contact.noHP %></div>
+                    <div class="card-text mb-2"><%= contact.email %></div>
+                    <div class="mt-3">
+                        <a href="/contact/ubah/<%= contact.nama %>" class="btn btn-info btn-sm">Ubah</a>
+                        <a href="/contact/delete/<%= contact.nama %>" class="btn btn-danger btn-sm" onclick="alert('Yakin untuk menghapus ?')">Hapus</a>
+                    </div>
+                    <a href="/contact" class="card-link d-block mt-3">&laquo; Kembali Ke Halaman Contact</a>
+                </div>
+            </div>
+        </div>
+        <% } -%>
+    </div>
 </div>
