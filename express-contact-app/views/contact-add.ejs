@@ -10,22 +10,42 @@
 					</ul>
 				</div>
 			<% } -%>
-			<h2 class="mb-2">Form Add Contact</h2>
-			<form action="/contact" method="post">
-				<div class="form-group my-3">
-					<label>Nama</label>
-					<input type="text" name="nama" id="nama" class="form-control" placeholder="Nama Contact" required>
-				</div>
-				<div class="form-group my-3">
-					<label>Email</label>
-					<input type="email" name="email" id="email" class="form-control" placeholder="Email Contact" required>
-				</div>
-				<div class="form-group my-3">
-					<label>No Handphone</label>
-					<input type="text" id="nohp" name="nohp" class="form-control" placeholder="No Hp Contact">
-				</div>
-				<button class="btn btn-success" type="submit">Simpan</button>
-			</form>
+			<% if (contact.length === 0) { %>
+				<h2 class="mb-2">Form Add Contact</h2>
+				<form action="/contact" method="post">
+					<div class="form-group my-3">
+						<label>Nama</label>
+						<input type="text" name="nama" id="nama" class="form-control" placeholder="Nama Contact" required>
+					</div>
+					<div class="form-group my-3">
+						<label>Email</label>
+						<input type="email" name="email" id="email" class="form-control" placeholder="Email Contact" required>
+					</div>
+					<div class="form-group my-3">
+						<label>No Handphone</label>
+						<input type="text" id="nohp" name="nohp" class="form-control" placeholder="No Hp Contact">
+					</div>
+					<button class="btn btn-success" type="submit">Simpan</button>
+				</form>
+			<% } else { %>
+				<% contact = contact[0] %>
+				<h2 class="mb-2">Form Ubah Contact</h2>
+				<form action="/contact/ubah/<%= contact.nama %>" method="post">
+					<div class="form-group my-3">
+						<label>Nama</label>
+						<input type="text" value="<%= contact.nama %>" name="nama" id="nama" class="form-control" placeholder="Nama Contact" required>
+					</div>
+					<div class="form-group my-3">
+						<label>Email</label>
+						<input type="email" value="<%= contact.email %>" name="email" id="email" class="form-control" placeholder="Email Contact" required>
+					</div>
+					<div class="form-group my-3">
+						<label>No Handphone</label>
+						<input type="text" value="<%= contact.nohp %>" id="nohp" name="nohp" class="form-control" placeholder="No Hp Contact">
+					</div>
+					<button class="btn btn-success" type="submit">Ubah</button>
+				</form>
+			<% } %>
 		</div>
 	</div>
 </div>

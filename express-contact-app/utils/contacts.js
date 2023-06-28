@@ -1,3 +1,4 @@
+const { log } = require('console')
 const fs = require('fs')
 
 const dirPath = './data'
@@ -52,4 +53,17 @@ const deleteContact = (nama) => {
    return true
 }
 
-module.exports = { getContacts, findContact, addContact, checkDuplikat, deleteContact }
+const getContactByName = (nama) => {
+   const contacts = getContacts()
+   const contact = contacts.filter((contact) => contact.nama == nama)
+   return contact
+}
+
+const updateContact = ({nama, email, nohp = null},oldName) => {
+   const contacts = getContacts()
+   const newContacts = contacts.filter((contact) => contact.nama !== oldName) 
+   newContacts.push({nama, email, nohp})
+   saveContacts(newContacts)
+}
+
+module.exports = { getContacts, findContact, addContact, checkDuplikat, deleteContact, getContactByName, updateContact }
