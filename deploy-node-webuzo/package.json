@@ -1,0 +1,14 @@
+{
+  "name": "deploy-node-webuzo",
+  "version": "1.0.0",
+  "description": "Deploy nodejs di webuzo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yukie",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
