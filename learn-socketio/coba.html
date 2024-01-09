@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button>FAILED</button>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  socket.on('test message', (msg) => {
+    console.log(msg)
+    const button = document.querySelector('button')
+    button.innerText = msg
+  });
+</script>
+</body>
+</html>

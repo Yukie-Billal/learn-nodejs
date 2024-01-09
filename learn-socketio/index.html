@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-time Chat App</title>
+    <style>
+        * {
+            font-family: sans-serif;
+            font-size: 18px;
+        }
+
+        ul > li {
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const state = {
+    id: 0,
+    name: '',
+    registry: false,
+    setRegistry(value) {
+      this.registry = value
+    },
+    setName(callback) {
+      let isLoop = true
+      while (isLoop) {
+        let name = prompt("Masukkan nama anda: ")
+        name = extractWords(name)
+        if (!name && name.length < 3) {
+          alert("Maukkan nama yang benar mas bro")
+        } else {
+          isLoop = false
+          this.name = name
+          callback()
+        }
+      }
+    }
+  }
+  const mainBody = `<ul id="messages"></ul>
+    <input id="messageInput" autocomplete="off" onsubmit="sendMessage()"/>
+    <button onclick="sendMessage()">Send</button>
+    <div>
+        <button onclick="clearChat()">Clear chat</button>
+    </div>
+    <div>
+        <button onclick="changeName()">Change name</button>
+    </div>
+    <audio controls id="audioplayer">
+        <source src="https://github.com/petanikode/belajar-html/raw/master/audio/Ngoni.mp3" type="audio/mpeg">
+        Browsermu tidak mendukung tag audio, upgrade donk!
+    </audio>`
+  const socket = io()
+  const key = "yangtadidibalik"
+
+  if (!state.registry) {
+    state.setName(() => {
+      state.setRegistry(true)
+      document.querySelector('#app').innerHTML = mainBody
+      socket.emit('join chat', state.name + ", Join chat")
+    })
+  }
+
+  function sendMessage() {
+    let message = document.getElementById('messageInput').value
+    if (message.length > 150) {
+      alert("maaf anda di blokir")
+    } else if (message.length > 0) {
+      socket.emit('chat message', {message, id: state.name})
+      document.getElementById('messageInput').value = ''
+    } else {
+      alert("Jangan iseng mas bro")
+    }
+  }
+
+  function clearChat() {
+    alert("Mau hapus harus izin admin")
+    let keyL = prompt('kata kunci : ')
+    if (keyL === key) {
+      socket.emit('clear chat')
+    }
+  }
+
+  socket.on('setid', (id) => {
+    if (state.id === 0) {
+      state.id = id
+    }
+  })
+
+  socket.on('chat message', (msg) => {
+    createMessage(`${msg.id}: ${msg.message}`)
+    playAudio()
+  });
+
+  socket.on('change name', (msg) => {
+    createMessage(`System: ${msg.lastName} merubah namanya menjadi ${msg.newName}`)
+    playAudio()
+  })
+
+  socket.on('join chat', (msg) => {
+    createMessage(`System: ${msg}`)
+    setTimeout(() => {
+        playAudio(2000)
+    }, 200)
+  })
+
+  socket.on('clear chat', () => {
+    const ul = document.getElementById('messages');
+    ul.innerHTML = ''
+  })
+
+  const changeName = () => {
+    state.setName(() => {
+      socket.emit('change name', {lastName: state.name, newName: name})
+    })
+  }
+
+  const playAudio = (timeout=5000) => {
+    const audioplayer = document.querySelector('#audioplayer')
+    clearTimeout('*')
+    audioplayer.play()
+    setTimeout(() => {
+      audioplayer.pause()
+    }, timeout)
+  }
+
+  function extractWords(input) {
+    const wordsOnly = input.match(/[a-zA-Z0-9]+/g);
+    if (wordsOnly) {
+      return wordsOnly.join(' ');  // Menggabungkan kata-kata menjadi satu string
+    } else {
+      return '';  // Return string kosong jika tidak ada kata yang cocok
+    }
+  }
+
+  const createMessage = (msg) => {
+    const ul = document.querySelector('#messages')
+    const li = document.createElement('li')
+    li.appendChild(document.createTextNode(msg))
+    ul.appendChild(li)
+  }
+</script>
+</body>
+</html>
